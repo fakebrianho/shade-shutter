@@ -4,8 +4,12 @@ import { useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Link from 'next/link'
 import imageCompression from 'browser-image-compression'
+import styles from './upload.module.css'
 
 export default function UploadPage() {
+	// Phase management
+	const [phase, setPhase] = useState('form') // 'form' or 'upload'
+	
 	const [files, setFiles] = useState([])
 	const [userInfo, setUserInfo] = useState({
 		email: '',
@@ -62,7 +66,16 @@ export default function UploadPage() {
 		},
 	})
 
-	const handleSubmit = async (e) => {
+	// Handle form submission - move to upload phase
+	const handleFormSubmit = (e) => {
+		e.preventDefault()
+		if (userInfo.email && userInfo.name && userInfo.project) {
+			setPhase('upload')
+		}
+	}
+
+	// Handle final upload submission
+	const handleUploadSubmit = async (e) => {
 		e.preventDefault()
 		if (files.length === 0) return
 
@@ -104,28 +117,33 @@ export default function UploadPage() {
 		setFiles(files.filter((_, index) => index !== indexToRemove))
 	}
 
+	const resetForm = () => {
+		setPhase('form')
+		setSubmitted(false)
+		setFiles([])
+		setUserInfo({ email: '', name: '', project: '' })
+		setUploadError('')
+	}
+
+	// Success screen
 	if (submitted) {
 		return (
-			<div className='container mx-auto p-8 text-center'>
-				<div className='max-w-md mx-auto bg-green-50 p-8 rounded-lg'>
+			<div className={styles.uploadContainer}>
+				<div className={styles.successContainer}>
 					<div className='text-6xl mb-4'>✅</div>
-					<h1 className='text-2xl font-bold text-green-800 mb-4'>
+					<h1 className={`${styles.whiteText} text-2xl font-bold mb-4`}>
 						Upload Successful!
 					</h1>
-					<p className='text-green-700 mb-4'>
+					<p className={`${styles.successText} mb-4`}>
 						Your {files.length} images have been submitted for
 						processing.
 					</p>
-					<p className='text-sm text-green-600'>
+					<p className={`${styles.mutedText} text-sm`}>
 						You'll receive an email when they're ready.
 					</p>
 					<button
-						onClick={() => {
-							setSubmitted(false)
-							setFiles([])
-							setUserInfo({ email: '', name: '', project: '' })
-						}}
-						className='mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600'
+						onClick={resetForm}
+						className={`${styles.submitButton} mt-4`}
 					>
 						Upload More Photos
 					</button>
@@ -134,163 +152,191 @@ export default function UploadPage() {
 		)
 	}
 
-	return (
-		<div className='container mx-auto p-8'>
-			<div className='flex justify-between items-center mb-8'>
-				<h1 className='text-3xl font-bold'>Upload Your Photos</h1>
-				<Link
-					href='/admin'
-					className='bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm'
-				>
-					📊 Admin Dashboard
-				</Link>
+	// Phase 1: User Information Form
+	if (phase === 'form') {
+		return (
+			<div className={styles.uploadContainer}>
+				<div className={styles.glassForm}>
+					<h1 className={styles.formTitle}>Let's Get Started</h1>
+					
+					<form onSubmit={handleFormSubmit} className='space-y-6'>
+						<div className='space-y-4'>
+							<div>
+								<label className={styles.formLabel}>Email Address</label>
+								<input
+									type='email'
+									placeholder='your@email.com'
+									required
+									value={userInfo.email}
+									onChange={(e) =>
+										setUserInfo((prev) => ({
+											...prev,
+											email: e.target.value,
+										}))
+									}
+									className={styles.formInput}
+								/>
+							</div>
+							
+							<div>
+								<label className={styles.formLabel}>Full Name</label>
+								<input
+									type='text'
+									placeholder='John Doe'
+									required
+									value={userInfo.name}
+									onChange={(e) =>
+										setUserInfo((prev) => ({
+											...prev,
+											name: e.target.value,
+										}))
+									}
+									className={styles.formInput}
+								/>
+							</div>
+							
+							<div>
+								<label className={styles.formLabel}>Project Name</label>
+								<input
+									type='text'
+									placeholder='My Awesome Project'
+									required
+									value={userInfo.project}
+									onChange={(e) =>
+										setUserInfo((prev) => ({
+											...prev,
+											project: e.target.value,
+										}))
+									}
+									className={styles.formInput}
+								/>
+							</div>
+						</div>
+
+						<button
+							type='submit'
+							disabled={!userInfo.email || !userInfo.name || !userInfo.project}
+							className={`${styles.submitButton} w-full`}
+						>
+							Continue to Upload
+						</button>
+					</form>
+				</div>
 			</div>
+		)
+	}
 
-			<form onSubmit={handleSubmit} className='space-y-6'>
-				{/* User Info */}
-				<div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-					<input
-						type='email'
-						placeholder='Your Email'
-						required
-						value={userInfo.email}
-						onChange={(e) =>
-							setUserInfo((prev) => ({
-								...prev,
-								email: e.target.value,
-							}))
-						}
-						className='border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-					/>
-					<input
-						type='text'
-						placeholder='Your Name'
-						required
-						value={userInfo.name}
-						onChange={(e) =>
-							setUserInfo((prev) => ({
-								...prev,
-								name: e.target.value,
-							}))
-						}
-						className='border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-					/>
-					<input
-						type='text'
-						placeholder='Project Name'
-						required
-						value={userInfo.project}
-						onChange={(e) =>
-							setUserInfo((prev) => ({
-								...prev,
-								project: e.target.value,
-							}))
-						}
-						className='border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-					/>
+	// Phase 2: File Upload Interface
+	return (
+		<div className={styles.uploadContainer}>
+			<div className={styles.glassUpload}>
+				<div className='flex justify-between items-center mb-6'>
+					<h1 className={`${styles.whiteText} text-2xl font-bold`}>
+						Upload Your Photos
+					</h1>
+					<button
+						onClick={() => setPhase('form')}
+						className={`${styles.formInput} text-sm`}
+					>
+						← Back to Info
+					</button>
 				</div>
 
-				{/* File Drop Zone */}
-				<div
-					{...getRootProps()}
-					className={`border-2 border-dashed p-8 text-center cursor-pointer rounded-lg transition-colors ${
-						isDragActive
-							? 'border-blue-500 bg-blue-50'
-							: 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
-					}`}
-				>
-					<input {...getInputProps()} />
-					<div className='text-4xl mb-4'>📸</div>
-					<p className='text-lg mb-2'>
-						{isDragActive
-							? 'Drop the images here...'
-							: 'Drop up to 33 images here, or click to select files'}
-					</p>
-					<p className='text-sm text-gray-500'>
-						{files.length}/33 files selected
-					</p>
-					{compressing && (
-						<p className='text-sm text-blue-600 mt-2'>
-							🔄 Compressing images to reduce file size...
+				<form onSubmit={handleUploadSubmit} className='space-y-6'>
+					<div className={`${styles.mutedText} text-center mb-4`}>
+						Project: <span className={styles.whiteText}>{userInfo.project}</span>
+					</div>
+
+					{/* File Drop Zone */}
+					<div
+						{...getRootProps()}
+						className={`${styles.dropZone} ${isDragActive ? styles.dropZoneActive : ''}`}
+					>
+						<input {...getInputProps()} />
+						<div className='text-4xl mb-4'>📸</div>
+						<p className={`${styles.whiteText} text-lg mb-2`}>
+							{isDragActive
+								? 'Drop your images here...'
+								: 'Drop up to 33 images here, or click to select files'}
 						</p>
-					)}
-				</div>
+						<p className={`${styles.mutedText} text-sm`}>
+							{files.length}/33 files selected
+						</p>
+						{compressing && (
+							<p className={`${styles.whiteText} text-sm mt-2`}>
+								🔄 Compressing images to reduce file size...
+							</p>
+						)}
+					</div>
 
-				{/* Preview Grid */}
-				{files.length > 0 && (
-					<div>
-						<h3 className='text-lg font-semibold mb-4'>
-							Selected Images:
-						</h3>
-						<div className='grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4'>
-							{files.map((file, index) => (
-								<div key={index} className='relative group'>
-									<img
-										src={URL.createObjectURL(file)}
-										alt={`Preview ${index}`}
-										className='w-full h-24 object-cover rounded-lg'
-									/>
-									<button
-										type='button'
-										onClick={() => removeFile(index)}
-										className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600 opacity-80 group-hover:opacity-100 transition-opacity'
-									>
-										×
-									</button>
-									<div className='absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-lg'>
-										<div className='truncate'>
-											{file.name}
-										</div>
-										<div className='text-xs opacity-75'>
-											{(
-												file.size /
-												(1024 * 1024)
-											).toFixed(1)}
-											MB
+					{/* Preview Grid */}
+					{files.length > 0 && (
+						<div>
+							<h3 className={`${styles.whiteText} text-lg font-semibold mb-4`}>
+								Selected Images:
+							</h3>
+							<div className={styles.previewGrid}>
+								{files.map((file, index) => (
+									<div key={index} className={styles.previewItem}>
+										<img
+											src={URL.createObjectURL(file)}
+											alt={`Preview ${index}`}
+											className={styles.previewImage}
+										/>
+										<button
+											type='button'
+											onClick={() => removeFile(index)}
+											className={styles.removeButton}
+										>
+											×
+										</button>
+										<div className={styles.fileInfo}>
+											<div className={styles.fileName}>{file.name}</div>
+											<div className={styles.fileSize}>
+												{(file.size / (1024 * 1024)).toFixed(1)} MB
+											</div>
 										</div>
 									</div>
-								</div>
-							))}
+								))}
+							</div>
 						</div>
-					</div>
-				)}
-
-				{/* Error Display */}
-				{uploadError && (
-					<div className='bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg'>
-						<div className='flex items-center'>
-							<span className='text-red-500 mr-2'>⚠️</span>
-							<span>{uploadError}</span>
-						</div>
-					</div>
-				)}
-
-				<button
-					type='submit'
-					disabled={
-						uploading ||
-						compressing ||
-						files.length === 0 ||
-						!userInfo.email ||
-						!userInfo.name
-					}
-					className='w-full bg-blue-500 text-white p-4 rounded-lg text-lg font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors'
-				>
-					{compressing ? (
-						<div className='flex items-center justify-center'>
-							<div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2'></div>
-							Compressing images...
-						</div>
-					) : uploading ? (
-						<div className='flex items-center justify-center'>
-							<div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2'></div>
-							Uploading {files.length} images...
-						</div>
-					) : (
-						`Submit ${files.length} Images`
 					)}
-				</button>
-			</form>
+
+					{/* Error Display */}
+					{uploadError && (
+						<div className={styles.errorContainer}>
+							<div className='flex items-center'>
+								<span className='mr-2'>⚠️</span>
+								<span className={styles.errorText}>{uploadError}</span>
+							</div>
+						</div>
+					)}
+
+					<button
+						type='submit'
+						disabled={
+							uploading ||
+							compressing ||
+							files.length === 0
+						}
+						className={`${styles.submitButton} w-full`}
+					>
+						{compressing ? (
+							<div className='flex items-center justify-center'>
+								<div className={styles.spinner}></div>
+								Compressing images...
+							</div>
+						) : uploading ? (
+							<div className='flex items-center justify-center'>
+								<div className={styles.spinner}></div>
+								Uploading {files.length} images...
+							</div>
+						) : (
+							`Submit ${files.length} Images`
+						)}
+					</button>
+				</form>
+			</div>
 		</div>
 	)
 }

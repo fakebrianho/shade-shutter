@@ -1,0 +1,313 @@
+/* Upload page styles with glassmorphism design */
+.uploadContainer {
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+	position: relative;
+	overflow: hidden;
+}
+
+/* Glassmorphism form container */
+.glassForm {
+	background: rgba(255, 255, 255, 0.05);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 24px;
+	padding: 40px;
+	box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+	max-width: 600px;
+	width: 90%;
+	animation: fadeInUp 0.8s ease-out;
+}
+
+/* Phase 2 glassmorphism container */
+.glassUpload {
+	background: rgba(255, 255, 255, 0.03);
+	backdrop-filter: blur(15px);
+	-webkit-backdrop-filter: blur(15px);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 20px;
+	padding: 30px;
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+	max-width: 800px;
+	width: 90%;
+	margin: 20px auto;
+	animation: fadeInScale 0.6s ease-out;
+}
+
+/* Form input fields */
+.formInput {
+	background: rgba(255, 255, 255, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 12px;
+	padding: 15px 20px;
+	color: #ffffff;
+	font-size: 16px;
+	transition: all 0.3s ease;
+	outline: none;
+}
+
+.formInput::placeholder {
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.formInput:focus {
+	background: rgba(255, 255, 255, 0.12);
+	border-color: rgba(255, 255, 255, 0.3);
+	box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+/* Form submit button */
+.submitButton {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: white;
+	border: none;
+	border-radius: 12px;
+	padding: 16px 32px;
+	font-size: 16px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	position: relative;
+	overflow: hidden;
+}
+
+.submitButton:hover:not(:disabled) {
+	transform: translateY(-2px);
+	box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+.submitButton:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* Drop zone styling */
+.dropZone {
+	background: rgba(255, 255, 255, 0.02);
+	border: 2px dashed rgba(255, 255, 255, 0.2);
+	border-radius: 16px;
+	padding: 40px;
+	text-align: center;
+	transition: all 0.3s ease;
+	cursor: pointer;
+}
+
+.dropZone:hover {
+	background: rgba(255, 255, 255, 0.05);
+	border-color: rgba(255, 255, 255, 0.4);
+}
+
+.dropZoneActive {
+	background: rgba(102, 126, 234, 0.1);
+	border-color: #667eea;
+}
+
+/* File preview grid */
+.previewGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+	gap: 16px;
+	margin-top: 20px;
+}
+
+.previewItem {
+	position: relative;
+	background: rgba(255, 255, 255, 0.05);
+	border-radius: 12px;
+	overflow: hidden;
+	aspect-ratio: 1;
+}
+
+.previewImage {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.removeButton {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	background: rgba(255, 59, 48, 0.8);
+	color: white;
+	border: none;
+	border-radius: 50%;
+	width: 24px;
+	height: 24px;
+	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.removeButton:hover {
+	background: rgba(255, 59, 48, 1);
+	transform: scale(1.1);
+}
+
+.fileInfo {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: rgba(0, 0, 0, 0.7);
+	color: white;
+	padding: 8px;
+	font-size: 11px;
+	backdrop-filter: blur(10px);
+}
+
+.fileName {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.fileSize {
+	opacity: 0.8;
+}
+
+/* Success container */
+.successContainer {
+	background: rgba(52, 211, 153, 0.1);
+	backdrop-filter: blur(15px);
+	-webkit-backdrop-filter: blur(15px);
+	border: 1px solid rgba(52, 211, 153, 0.3);
+	border-radius: 20px;
+	padding: 40px;
+	text-align: center;
+	max-width: 500px;
+	width: 90%;
+	margin: 20px auto;
+	animation: fadeInScale 0.6s ease-out;
+}
+
+/* Error container */
+.errorContainer {
+	background: rgba(239, 68, 68, 0.1);
+	backdrop-filter: blur(15px);
+	-webkit-backdrop-filter: blur(15px);
+	border: 1px solid rgba(239, 68, 68, 0.3);
+	border-radius: 12px;
+	padding: 16px;
+	margin-bottom: 20px;
+	color: #fca5a5;
+}
+
+/* Loading spinner */
+.spinner {
+	border: 2px solid rgba(255, 255, 255, 0.2);
+	border-top: 2px solid white;
+	border-radius: 50%;
+	width: 20px;
+	height: 20px;
+	animation: spin 1s linear infinite;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(30px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes fadeInScale {
+	from {
+		opacity: 0;
+		transform: scale(0.9);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+	.glassForm {
+		padding: 30px 20px;
+	}
+	
+	.glassUpload {
+		padding: 20px;
+	}
+	
+	.previewGrid {
+		grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+		gap: 12px;
+	}
+}
+
+@media (max-width: 480px) {
+	.glassForm {
+		padding: 20px 15px;
+	}
+	
+	.formInput {
+		padding: 12px 16px;
+		font-size: 14px;
+	}
+	
+	.dropZone {
+		padding: 30px 20px;
+	}
+}
+
+/* Title styling */
+.formTitle {
+	color: white;
+	font-size: 28px;
+	font-weight: 700;
+	margin-bottom: 32px;
+	text-align: center;
+	background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+/* Label styling */
+.formLabel {
+	color: rgba(255, 255, 255, 0.8);
+	font-size: 14px;
+	font-weight: 500;
+	margin-bottom: 8px;
+	display: block;
+}
+
+/* Text styling */
+.whiteText {
+	color: white;
+}
+
+.mutedText {
+	color: rgba(255, 255, 255, 0.6);
+}
+
+.errorText {
+	color: #fca5a5;
+}
+
+.successText {
+	color: #86efac;
+}
