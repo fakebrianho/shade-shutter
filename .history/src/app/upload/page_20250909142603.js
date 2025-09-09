@@ -21,7 +21,7 @@ export default function UploadPage() {
 	const compressImages = async (files) => {
 		setCompressing(true)
 		const compressedFiles = []
-
+		
 		for (const file of files) {
 			try {
 				// Only compress if file is larger than 5MB
@@ -33,7 +33,7 @@ export default function UploadPage() {
 						fileType: 'image/jpeg', // Convert to JPEG for better compression
 						initialQuality: 0.8, // Start with 80% quality
 					}
-
+					
 					const compressedFile = await imageCompression(file, options)
 					compressedFiles.push(compressedFile)
 				} else {
@@ -45,7 +45,7 @@ export default function UploadPage() {
 				compressedFiles.push(file)
 			}
 		}
-
+		
 		setCompressing(false)
 		return compressedFiles
 	}
@@ -56,7 +56,6 @@ export default function UploadPage() {
 		},
 		maxFiles: 33,
 		onDrop: async (acceptedFiles) => {
-			setUploadError('') // Clear any previous errors
 			const compressedFiles = await compressImages(acceptedFiles)
 			setFiles((prev) => [...prev, ...compressedFiles].slice(0, 33))
 		},
@@ -86,15 +85,11 @@ export default function UploadPage() {
 			if (result.success) {
 				setSubmitted(true)
 			} else {
-				setUploadError(
-					result.error || 'Upload failed. Please try again.'
-				)
+				setUploadError(result.error || 'Upload failed. Please try again.')
 			}
 		} catch (error) {
 			console.error('Upload failed:', error)
-			setUploadError(
-				'Network error. Please check your connection and try again.'
-			)
+			setUploadError('Network error. Please check your connection and try again.')
 		} finally {
 			setUploading(false)
 		}
@@ -238,29 +233,13 @@ export default function UploadPage() {
 										×
 									</button>
 									<div className='absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-lg'>
-										<div className='truncate'>
-											{file.name}
-										</div>
+										<div className='truncate'>{file.name}</div>
 										<div className='text-xs opacity-75'>
-											{(
-												file.size /
-												(1024 * 1024)
-											).toFixed(1)}
-											MB
+											{(file.size / (1024 * 1024)).toFixed(1)}MB
 										</div>
 									</div>
 								</div>
 							))}
-						</div>
-					</div>
-				)}
-
-				{/* Error Display */}
-				{uploadError && (
-					<div className='bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg'>
-						<div className='flex items-center'>
-							<span className='text-red-500 mr-2'>⚠️</span>
-							<span>{uploadError}</span>
 						</div>
 					</div>
 				)}

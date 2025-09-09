@@ -30,29 +30,13 @@ export async function POST(request) {
 			)
 		}
 
-		// Check file sizes (limit to 50MB total, 10MB per file)
+		// Check file sizes (limit to 50MB total)
 		let totalSize = 0
-		const maxTotalSize = 50 * 1024 * 1024 // 50MB total
-		const maxFileSize = 10 * 1024 * 1024 // 10MB per file
+		const maxSize = 50 * 1024 * 1024 // 50MB
 
 		for (const file of imageFiles) {
-			// Check individual file size
-			if (file.size > maxFileSize) {
-				return NextResponse.json(
-					{
-						error: `File "${file.name}" is too large (${(
-							file.size /
-							(1024 * 1024)
-						).toFixed(
-							1
-						)}MB). Maximum size per file is 10MB. Please compress your images before uploading.`,
-					},
-					{ status: 413 }
-				)
-			}
-
 			totalSize += file.size
-			if (totalSize > maxTotalSize) {
+			if (totalSize > maxSize) {
 				return NextResponse.json(
 					{ error: 'Total file size exceeds 50MB limit' },
 					{ status: 413 }

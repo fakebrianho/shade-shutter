@@ -39,18 +39,13 @@ export async function POST(request) {
 			// Check individual file size
 			if (file.size > maxFileSize) {
 				return NextResponse.json(
-					{
-						error: `File "${file.name}" is too large (${(
-							file.size /
-							(1024 * 1024)
-						).toFixed(
-							1
-						)}MB). Maximum size per file is 10MB. Please compress your images before uploading.`,
+					{ 
+						error: `File "${file.name}" is too large (${(file.size / (1024 * 1024)).toFixed(1)}MB). Maximum size per file is 10MB. Please compress your images before uploading.` 
 					},
 					{ status: 413 }
 				)
 			}
-
+			
 			totalSize += file.size
 			if (totalSize > maxTotalSize) {
 				return NextResponse.json(

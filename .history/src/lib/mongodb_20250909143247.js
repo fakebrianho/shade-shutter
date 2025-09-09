@@ -16,6 +16,7 @@ const options = {
 	connectTimeoutMS: 30000,
 	// Additional SSL options for Atlas
 	ssl: true,
+	sslValidate: true,
 }
 
 let client

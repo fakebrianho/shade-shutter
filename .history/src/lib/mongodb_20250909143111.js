@@ -3,7 +3,7 @@ import { MongoClient } from 'mongodb'
 const uri = process.env.MONGODB_URI
 const options = {
 	maxPoolSize: 10,
-	serverSelectionTimeoutMS: 10000,
+	serverSelectionTimeoutMS: 5000,
 	socketTimeoutMS: 45000,
 	// SSL/TLS options to handle connection issues
 	tls: true,
@@ -13,9 +13,7 @@ const options = {
 	retryWrites: true,
 	retryReads: true,
 	// Connection timeout
-	connectTimeoutMS: 30000,
-	// Additional SSL options for Atlas
-	ssl: true,
+	connectTimeoutMS: 10000,
 }
 
 let client

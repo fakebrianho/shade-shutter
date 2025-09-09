@@ -21,7 +21,7 @@ export default function UploadPage() {
 	const compressImages = async (files) => {
 		setCompressing(true)
 		const compressedFiles = []
-
+		
 		for (const file of files) {
 			try {
 				// Only compress if file is larger than 5MB
@@ -33,7 +33,7 @@ export default function UploadPage() {
 						fileType: 'image/jpeg', // Convert to JPEG for better compression
 						initialQuality: 0.8, // Start with 80% quality
 					}
-
+					
 					const compressedFile = await imageCompression(file, options)
 					compressedFiles.push(compressedFile)
 				} else {
@@ -45,7 +45,7 @@ export default function UploadPage() {
 				compressedFiles.push(file)
 			}
 		}
-
+		
 		setCompressing(false)
 		return compressedFiles
 	}
@@ -86,15 +86,11 @@ export default function UploadPage() {
 			if (result.success) {
 				setSubmitted(true)
 			} else {
-				setUploadError(
-					result.error || 'Upload failed. Please try again.'
-				)
+				setUploadError(result.error || 'Upload failed. Please try again.')
 			}
 		} catch (error) {
 			console.error('Upload failed:', error)
-			setUploadError(
-				'Network error. Please check your connection and try again.'
-			)
+			setUploadError('Network error. Please check your connection and try again.')
 		} finally {
 			setUploading(false)
 		}
@@ -238,15 +234,9 @@ export default function UploadPage() {
 										×
 									</button>
 									<div className='absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-lg'>
-										<div className='truncate'>
-											{file.name}
-										</div>
+										<div className='truncate'>{file.name}</div>
 										<div className='text-xs opacity-75'>
-											{(
-												file.size /
-												(1024 * 1024)
-											).toFixed(1)}
-											MB
+											{(file.size / (1024 * 1024)).toFixed(1)}MB
 										</div>
 									</div>
 								</div>

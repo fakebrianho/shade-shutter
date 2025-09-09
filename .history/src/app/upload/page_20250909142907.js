@@ -265,6 +265,11 @@ export default function UploadPage() {
 					</div>
 				)}
 
+				{/* Debug info - remove this after testing */}
+				<div className='text-xs text-gray-500 mb-2'>
+					Debug: Files: {files.length}, Email: {userInfo.email ? '✓' : '✗'}, Name: {userInfo.name ? '✓' : '✗'}, Uploading: {uploading ? '✓' : '✗'}, Compressing: {compressing ? '✓' : '✗'}
+				</div>
+
 				<button
 					type='submit'
 					disabled={
