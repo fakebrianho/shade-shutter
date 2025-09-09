@@ -9,10 +9,15 @@ export default function SubmissionsDashboard() {
 	const [error, setError] = useState(null)
 	const [selectedUser, setSelectedUser] = useState('')
 	const [users, setUsers] = useState([])
+	const [viewMode, setViewMode] = useState('submissions') // 'submissions' or 'cloudinary'
 
 	useEffect(() => {
-		fetchSubmissions()
-	}, [selectedUser])
+		if (viewMode === 'submissions') {
+			fetchSubmissions()
+		} else {
+			fetchCloudinaryUsers()
+		}
+	}, [selectedUser, viewMode])
 
 	// Ensure users array is always valid and handle empty state
 	const validUsers = users
@@ -34,41 +39,23 @@ export default function SubmissionsDashboard() {
 			const data = await response.json()
 
 			if (data.success) {
-				console.log('Raw submissions data:', data.submissions)
-
 				setSubmissions(data.submissions)
 
-				// Extract unique users and ensure they're properly filtered
+				// Extract unique users from submissions
 				const userIdentifiers = data.submissions
 					.map((s) => {
-						console.log(`Submission ${s.submissionId}:`, {
-							userIdentifier: s.userIdentifier,
-							userInfo: s.userInfo,
-							hasUserIdentifier: !!s.userIdentifier,
-							type: typeof s.userIdentifier,
-						})
-
-						// Fallback: if userIdentifier is not set, try to get it from userInfo
 						if (!s.userIdentifier && s.userInfo) {
 							const fallbackId =
 								s.userInfo.email || s.userInfo.name
 							if (fallbackId) {
-								console.log(
-									`Using fallback user identifier: ${fallbackId}`
-								)
 								return fallbackId
 							}
 						}
-
 						return s.userIdentifier
 					})
 					.filter(Boolean)
 
-				console.log('Filtered user identifiers:', userIdentifiers)
-
 				const uniqueUsers = [...new Set(userIdentifiers)]
-				console.log('Final unique users:', uniqueUsers)
-
 				setUsers(uniqueUsers)
 			} else {
 				setError(data.error)
@@ -76,6 +63,56 @@ export default function SubmissionsDashboard() {
 		} catch (err) {
 			setError('Failed to fetch submissions')
 			console.error('Error fetching submissions:', err)
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	const fetchCloudinaryUsers = async () => {
+		try {
+			setLoading(true)
+			const params = new URLSearchParams()
+			if (selectedUser) {
+				params.append('user', selectedUser)
+			}
+
+			const response = await fetch(`/api/cloudinary-users?${params}`)
+			const data = await response.json()
+
+			if (data.success) {
+				// Set users from Cloudinary
+				const userIdentifiers = data.users.map(user => user.userIdentifier)
+				setUsers(userIdentifiers)
+				
+				// Transform Cloudinary users data to submission-like format for display
+				const cloudinarySubmissions = data.users.flatMap(user => 
+					user.submissions.map(submission => ({
+						submissionId: submission.submissionId,
+						userIdentifier: user.userIdentifier,
+						userInfo: { name: user.userIdentifier },
+						status: 'processed',
+						createdAt: submission.createdAt,
+						cloudinaryFolder: submission.folderPath,
+						images: Array(submission.imageCount).fill({}),
+						metadata: {
+							totalImages: submission.imageCount,
+							totalSize: submission.totalSize,
+							folderStructure: submission.folderPath,
+						},
+						cloudinaryInfo: {
+							resourceCount: submission.imageCount,
+							resources: submission.resources,
+						}
+					}))
+				)
+
+				setSubmissions(cloudinarySubmissions)
+			} else {
+				setError(data.error)
+			}
+		} catch (err) {
+			setError('Failed to fetch Cloudinary users')
+			console.error('Error fetching Cloudinary users:', err)
 		} finally {
 			setLoading(false)
 		}
@@ -137,8 +174,22 @@ export default function SubmissionsDashboard() {
 	return (
 		<div className={styles.dashboard}>
 			<div className={styles.header}>
-				<h2>Submissions Dashboard</h2>
+				<h2>Admin Dashboard</h2>
 				<div className={styles.controls}>
+					<div className={styles.viewToggle}>
+						<button
+							className={`${styles.viewBtn} ${viewMode === 'submissions' ? styles.activeView : ''}`}
+							onClick={() => setViewMode('submissions')}
+						>
+							Database
+						</button>
+						<button
+							className={`${styles.viewBtn} ${viewMode === 'cloudinary' ? styles.activeView : ''}`}
+							onClick={() => setViewMode('cloudinary')}
+						>
+							Cloudinary
+						</button>
+					</div>
 					<select
 						value={selectedUser}
 						onChange={(e) => setSelectedUser(e.target.value)}
@@ -164,7 +215,7 @@ export default function SubmissionsDashboard() {
 						)}
 					</select>
 					<button
-						onClick={fetchSubmissions}
+						onClick={viewMode === 'submissions' ? fetchSubmissions : fetchCloudinaryUsers}
 						className={styles.refreshBtn}
 					>
 						Refresh
@@ -174,8 +225,11 @@ export default function SubmissionsDashboard() {
 
 			<div className={styles.stats}>
 				<div className={styles.statCard}>
-					<h3>Total Submissions</h3>
-					<p>{submissions.length}</p>
+					<h3>Total {viewMode === 'cloudinary' ? 'Users' : 'Submissions'}</h3>
+					<p>{viewMode === 'cloudinary' 
+						? [...new Set(submissions.map(s => s.userIdentifier))].length 
+						: submissions.length}
+					</p>
 				</div>
 				<div className={styles.statCard}>
 					<h3>Total Images</h3>
@@ -197,16 +251,20 @@ export default function SubmissionsDashboard() {
 						)}
 					</p>
 				</div>
+				<div className={styles.statCard}>
+					<h3>View Mode</h3>
+					<p>{viewMode === 'cloudinary' ? 'Cloudinary Storage' : 'Database'}</p>
+				</div>
 			</div>
 
 			<div className={styles.submissionsList}>
 				{submissions.length === 0 ? (
 					<div className={styles.emptyState}>
 						{loading
-							? 'Loading submissions...'
+							? `Loading ${viewMode === 'cloudinary' ? 'users' : 'submissions'}...`
 							: selectedUser
-							? `No submissions found for user: ${selectedUser}`
-							: 'No submissions found yet. Upload some images to get started!'}
+							? `No ${viewMode === 'cloudinary' ? 'submissions' : 'data'} found for user: ${selectedUser}`
+							: `No ${viewMode === 'cloudinary' ? 'users' : 'submissions'} found yet. Upload some images to get started!`}
 					</div>
 				) : (
 					submissions.map((submission) => (
@@ -278,7 +336,7 @@ export default function SubmissionsDashboard() {
 														}
 													>
 														<img
-															src={resource.url}
+															src={resource.url || resource.secure_url}
 															alt={`Resource ${
 																index + 1
 															}`}
