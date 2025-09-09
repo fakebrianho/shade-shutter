@@ -1,0 +1,159 @@
+/* Glass morphism navigation bar styles */
+.glassNavbar {
+	/* Fixed positioning at bottom of screen */
+	position: fixed;
+	bottom: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 1000;
+	
+	/* Glass morphism effect */
+	background: rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	
+	/* Rounded corners and spacing */
+	border-radius: 20px;
+	padding: 15px 30px;
+	
+	/* Shadow effects */
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Container for navigation links */
+.navContainer {
+	display: flex;
+	gap: 30px;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Individual navigation link styles */
+.navLink {
+	color: #ffffff;
+	text-decoration: none;
+	font-size: 16px;
+	font-weight: 500;
+	
+	/* Smooth transitions */
+	transition: all 0.3s ease;
+	
+	/* Relative positioning for pseudo-elements */
+	position: relative;
+	
+	/* Prevent text selection */
+	user-select: none;
+	
+	/* Remove outline on focus */
+	outline: none;
+}
+
+/* Hover effect for navigation links */
+.navLink:hover {
+	color: #e0e0e0;
+	transform: translateY(-2px);
+}
+
+/* Active/selected state for navigation links */
+.navLink:active,
+.navLink:focus {
+	color: #ffffff;
+}
+
+/* Underline animation on hover */
+.navLink::after {
+	content: '';
+	position: absolute;
+	bottom: -5px;
+	left: 0;
+	width: 0;
+	height: 2px;
+	background: linear-gradient(90deg, #ffffff, #e0e0e0);
+	transition: width 0.3s ease;
+}
+
+.navLink:hover::after {
+	width: 100%;
+}
+
+/* Responsive design for mobile devices */
+@media (max-width: 768px) {
+	.glassNavbar {
+		bottom: 15px;
+		left: 15px;
+		right: 15px;
+		transform: none;
+		border-radius: 15px;
+		padding: 12px 20px;
+	}
+	
+	.navContainer {
+		gap: 20px;
+	}
+	
+	.navLink {
+		font-size: 14px;
+	}
+}
+
+/* Tablet responsive design */
+@media (max-width: 480px) {
+	.glassNavbar {
+		bottom: 10px;
+		left: 10px;
+		right: 10px;
+		padding: 10px 15px;
+	}
+	
+	.navContainer {
+		gap: 15px;
+	}
+	
+	.navLink {
+		font-size: 13px;
+	}
+}
+
+/* Animation for navbar entrance */
+@keyframes slideUp {
+	from {
+		bottom: -100px;
+		opacity: 0;
+	}
+	to {
+		bottom: 20px;
+		opacity: 1;
+	}
+}
+
+.glassNavbar {
+	animation: slideUp 0.6s ease-out;
+}
+
+/* Mobile animation adjustment */
+@media (max-width: 768px) {
+	@keyframes slideUp {
+		from {
+			bottom: -100px;
+			opacity: 0;
+		}
+		to {
+			bottom: 15px;
+			opacity: 1;
+		}
+	}
+}
+
+@media (max-width: 480px) {
+	@keyframes slideUp {
+		from {
+			bottom: -100px;
+			opacity: 0;
+		}
+		to {
+			bottom: 10px;
+			opacity: 1;
+		}
+	}
+}
